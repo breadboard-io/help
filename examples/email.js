@@ -1,10 +1,5 @@
 /*
-@title Example Email send
-@input
-{
-  "content-type" : "text/plain",
-  "example" : "Hello from TaskMill"
-}
+@title Example Email
 */
 
 var sdk = require('breadboard-sdk');
