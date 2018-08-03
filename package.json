@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/breadboard-io/help#readme",
   "dependencies": {
-    "breadboard-sdk": "git+https://github.com/a7medkamel/breadboard-sdk.git"
+    "breadboard-sdk": "git+https://github.com/a7medkamel/breadboard-sdk.git",
+    "puppeteer": "^1.6.1"
   }
 }

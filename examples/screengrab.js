@@ -12,43 +12,26 @@
 @pragma editor
 */
 
-var phantom = require('phantom')
-  , Promise = require('bluebird')
-  ;
+var puppeteer = require('puppeteer');
 
-module.exports = function(req, res, next) {
-  Promise
-    .resolve(phantom.create())
-    .then((ph) => {
-      return Promise
-              .resolve(ph.createPage())
-              .tap((page) => {
-                return page.property('viewportSize', { width: 1920, height: 1080 });
-              })
-              .then((page) => {
-                var url = req.query.url || req.body;
-                if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
-                    url = "http://" + url;
-                }
+module.exports = async function(ctx, res) {
+  const browser = await puppeteer.launch({
+      headless: true,
+      ignoreHTTPSErrors: true,
+      timeout: 10000
+  });
 
-                console.log('opening page:', url);
-                return page
-                        .open(url)
-                        .then((status) => {
-                          console.log('opened:', url);
-                          console.log('rendering png...');
+  const page = await browser.newPage();
 
-                          return page.renderBase64('PNG');
-                        })
-                        .then((base64) => {
-                          console.log('rendered png');
+  await page.setViewport({width: 1920, height: 1080});
 
-                          res.end(new Buffer(base64, 'base64'), 'binary');
-                        });
-              })
-              .finally(() => {
-                return ph.kill();
-              });
-    })
-    .catch((err) => next);
+  await page.goto('https://reddit.com/');
+
+  let image = await page.screenshot({ fullPage: true });
+
+  browser.close();
+
+  res.set('Content-Type', 'image/png');
+
+  return image;
 };
